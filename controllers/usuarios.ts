@@ -1,90 +1,114 @@
 import { Request, Response } from 'express';
-import Usuario from '../models/usuario';
+import User from '../models/usuario';
 
 export const getUsuarios = async (req: Request, res: Response) => {
-    const usuarios = await Usuario.findAll();
+    const usuarios = await User.findAll();
 
     res.json({
-        msg: usuarios
+        msg: usuarios,
     });
-}
+};
 
 export const getUsuario = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const usuario = await Usuario.findByPk(id);
+    const usuario = await User.findByPk(id);
 
-    if(!usuario){
-        res.status(404).json({msg: `No existe un usuario con el id ${id}`});
+    if (!usuario) {
+        res.status(404).json({ msg: `No existe un usuario con el id ${id}` });
     }
 
-    res.json(
-        usuario
-    );
-}
+    res.json(usuario);
+};
 
 export const postUsuario = async (req: Request, res: Response) => {
     const { body } = req;
 
     try {
-        const existeEmail = await Usuario.findOne({
+        console.log(
+            '----------------------------------------------------------------------------------------'
+        );
+        console.log('body =', body);
+        console.log(
+            '----------------------------------------------------------------------------------------'
+        );
+        const existeEmail = await User.findOne({
             where: {
-                email: body.email
-            }
+                email: body.email,
+            },
         });
 
-        if(existeEmail){
+        console.log(
+            '----------------------------------------------------------------------------------------'
+        );
+        console.log('existeEmail =', existeEmail);
+        console.log(
+            '----------------------------------------------------------------------------------------'
+        );
+
+        if (existeEmail) {
             return res.status(400).json({
-                msg: 'Ya existe un usuario con el email' + body.email
+                msg: 'Ya existe un usuario con el email' + body.email,
             });
         }
 
-        const usuario = await Usuario.create(body);
+        console.log(
+            '----------------------------------------------------------------------------------------'
+        );
+        console.log('body =', body);
+        console.log(
+            '----------------------------------------------------------------------------------------'
+        );
+
+        const usuario = await User.create(body);
         res.json(usuario);
-    } catch(error) {
+    } catch (error) {
         console.log(error);
         res.json({
-            msg: 'Hable con el admin'
+            msg: 'Hable con el admin',
         });
     }
-}
+};
 
 export const putUsuario = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { body } = req;
 
     try {
-        const usuario = await Usuario.findByPk(id);
-        if(!usuario){
-            return res.status(400).json({msg: 'No existe un usuario con el id ' + id});
+        const usuario = await User.findByPk(id);
+        if (!usuario) {
+            return res
+                .status(400)
+                .json({ msg: 'No existe un usuario con el id ' + id });
         }
 
         await usuario.update(body);
 
         res.json(usuario);
-    } catch(error) {
+    } catch (error) {
         console.log(error);
         res.json({
-            msg: 'Hable con el admin'
+            msg: 'Hable con el admin',
         });
     }
-}
+};
 
 export const deleteUsuario = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    
-    const usuario = await Usuario.findByPk(id);
-    if(!usuario){
-        return res.status(400).json({msg: 'No existe un usuario con el id ' + id});
+    const usuario = await User.findByPk(id);
+    if (!usuario) {
+        return res
+            .status(400)
+            .json({ msg: 'No existe un usuario con el id ' + id });
     }
 
     //eliminacion logica en la DB
-    await usuario.update({estado: false});
+    await usuario.update({ estado: false });
 
     //eliminacion fisica en la BD
     //await usuario.destroy();
 
     res.json({
-        usuario
-    })
-}
+        usuario,
+    });
+};
