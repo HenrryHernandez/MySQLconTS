@@ -24,26 +24,11 @@ export const postUsuario = async (req: Request, res: Response) => {
     const { body } = req;
 
     try {
-        console.log(
-            '----------------------------------------------------------------------------------------'
-        );
-        console.log('body =', body);
-        console.log(
-            '----------------------------------------------------------------------------------------'
-        );
         const existeEmail = await User.findOne({
             where: {
                 email: body.email,
             },
         });
-
-        console.log(
-            '----------------------------------------------------------------------------------------'
-        );
-        console.log('existeEmail =', existeEmail);
-        console.log(
-            '----------------------------------------------------------------------------------------'
-        );
 
         if (existeEmail) {
             return res.status(400).json({
@@ -51,16 +36,14 @@ export const postUsuario = async (req: Request, res: Response) => {
             });
         }
 
-        console.log(
-            '----------------------------------------------------------------------------------------'
-        );
-        console.log('body =', body);
-        console.log(
-            '----------------------------------------------------------------------------------------'
-        );
-
-        const usuario = await User.create(body);
-        res.json(usuario);
+        //const usuario = await User.create(body);
+        User.sequelize
+            ?.query(
+                'CALL insertUser (:firstname, :lastname, :username, :password, :email, :role_id)',
+                { replacements: body }
+            )
+            .then((v) => console.log('response of store procedure =', v));
+        res.json({ msg: 'User added' });
     } catch (error) {
         console.log(error);
         res.json({

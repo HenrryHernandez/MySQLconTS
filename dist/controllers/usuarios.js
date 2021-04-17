@@ -31,29 +31,22 @@ const getUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.getUsuario = getUsuario;
 const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { body } = req;
     try {
-        console.log('----------------------------------------------------------------------------------------');
-        console.log('body =', body);
-        console.log('----------------------------------------------------------------------------------------');
         const existeEmail = yield usuario_1.default.findOne({
             where: {
                 email: body.email,
             },
         });
-        console.log('----------------------------------------------------------------------------------------');
-        console.log('existeEmail =', existeEmail);
-        console.log('----------------------------------------------------------------------------------------');
         if (existeEmail) {
             return res.status(400).json({
                 msg: 'Ya existe un usuario con el email' + body.email,
             });
         }
-        console.log('----------------------------------------------------------------------------------------');
-        console.log('body =', body);
-        console.log('----------------------------------------------------------------------------------------');
-        const usuario = yield usuario_1.default.create(body);
-        res.json(usuario);
+        //const usuario = await User.create(body);
+        (_a = usuario_1.default.sequelize) === null || _a === void 0 ? void 0 : _a.query('CALL insertUser (:firstname, :lastname, :username, :password, :email, :role_id)', { replacements: body }).then((v) => console.log('response of store procedure =', v));
+        res.json({ msg: 'User added' });
     }
     catch (error) {
         console.log(error);
